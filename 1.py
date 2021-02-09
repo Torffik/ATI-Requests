@@ -37,11 +37,11 @@ class Map(pygame.sprite.Sprite):
                 karta.ro_y = 20
         if pgdown:
             karta.ro_x -= 0.5
-            if karta.ro_x <= 0.5:
-                karta.ro_x = 0.5
+            if karta.ro_x <= 0.005:
+                karta.ro_x = 0.005
             karta.ro_y -= 0.5
-            if karta.ro_y <= 0.5:
-                karta.ro_y = 0.5
+            if karta.ro_y <= 0.005:
+                karta.ro_y = 0.005
 
         picture = requests.get(
             f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&spn={self.ro_x},{self.ro_y}&l=map").content
