@@ -23,10 +23,8 @@ class Pole(pygame.sprite.Sprite):
         y = pos[1]
         if self.rect.x <= x <= (self.rect.x + self.rect.width) and self.rect.y <= y <= (self.rect.y + self.rect.height):
             record = True
-            print('не скосил')
         else:
             record = False
-            print('cкосил')
 
     def update(self):
         if record:
@@ -41,14 +39,19 @@ class Pole(pygame.sprite.Sprite):
 
 
 class Map(pygame.sprite.Sprite):
-    def __init__(self, x=55.958727, y=54.735150, ro_x=1.026457, ro_y=1.0219):
+    def __init__(self, x=55.958727, y=54.735150, ro_x=1.026457, ro_y=1.0219, pt=False):
         super().__init__(maps)
         self.x = x
         self.y = y
         self.ro_x = ro_x
         self.ro_y = ro_y
-        picture = requests.get(
-            f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&spn={self.ro_x},{self.ro_y}&l=map").content
+        self.point = pt
+        if self.point:
+            picture = requests.get(
+                f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&pt={self.x},{self.y},flag&spn={self.ro_x},{self.ro_y}&l=map").content
+        else:
+            picture = requests.get(
+                f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&spn={self.ro_x},{self.ro_y}&l=map").content
         i = Image.open(BytesIO(picture))
         i.save('загруженное.png')
         self.image = pygame.image.load('загруженное.png')
@@ -85,12 +88,17 @@ class Map(pygame.sprite.Sprite):
             if karta.ro_y <= 0.005:
                 karta.ro_y = 0.005
         if updates:
-            picture = requests.get(
-                f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&spn={self.ro_x},{self.ro_y}&l=map").content
+            if self.point:
+                picture = requests.get(
+                    f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&pt={self.x},{self.y},flag&spn={self.ro_x},{self.ro_y}&l=map").content
+            else:
+                picture = requests.get(
+                    f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&spn={self.ro_x},{self.ro_y}&l=map").content
             i = Image.open(BytesIO(picture))
             i.save('загруженное.png')
             self.image = pygame.image.load('загруженное.png')
             self.rect = self.image.get_rect()
+
 
 def search(text):
     global karta
@@ -105,9 +113,10 @@ def search(text):
         toponym_coodrinates = toponym["Point"]["pos"]
         print(toponym_coodrinates, 'координаты запроса')
         coords = toponym_coodrinates.split()
-        x = coords[0]
-        y = coords[1]
-        karta = Map(x, y)
+        x = float(coords[0])
+        y = float(coords[1])
+        karta.kill()
+        karta = Map(x, y, pt=True)
     else:
         print("Ошибка выполнения запроса:")
         print(geocoder_request)
