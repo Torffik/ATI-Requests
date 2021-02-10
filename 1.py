@@ -46,9 +46,11 @@ class Map(pygame.sprite.Sprite):
         self.ro_x = ro_x
         self.ro_y = ro_y
         self.point = pt
+        self.point_x = self.x
+        self.point_y = self.y
         if self.point:
             picture = requests.get(
-                f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&pt={self.x},{self.y},flag&spn={self.ro_x},{self.ro_y}&l=map").content
+                f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&pt={self.point_x},{self.point_y},flag&spn={self.ro_x},{self.ro_y}&l=map").content
         else:
             picture = requests.get(
                 f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&spn={self.ro_x},{self.ro_y}&l=map").content
@@ -90,7 +92,7 @@ class Map(pygame.sprite.Sprite):
         if updates:
             if self.point:
                 picture = requests.get(
-                    f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&pt={self.x},{self.y},flag&spn={self.ro_x},{self.ro_y}&l=map").content
+                    f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&pt={self.point_x},{self.point_y},flag&spn={self.ro_x},{self.ro_y}&l=map").content
             else:
                 picture = requests.get(
                     f"https://static-maps.yandex.ru/1.x/?ll={self.x}%2C{self.y}&spn={self.ro_x},{self.ro_y}&l=map").content
